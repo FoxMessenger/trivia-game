@@ -1,0 +1,35 @@
+body {
+	background-color: #444;
+	color: white;
+}
+
+.container {
+	background-color: white;
+	padding: 50px;
+	margin: 50px auto;
+	margin-top: 0;
+}
+
+.timer,
+.answer,
+.question {
+	text-align: center;
+	background-color: tomato;
+	margin: 10px auto;
+	border-radius: 5px;
+}
+
+#timer {
+	text-align: center;
+	background-color: tomato;
+	margin: 10px auto;
+}
+
+
+
+#test {
+	text-align: center;
+	background-color: tomato;
+	margin: 0 auto;
+	padding: 50px;
+}
