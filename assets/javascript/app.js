@@ -62,7 +62,7 @@
 	// 	wrongAnswers: 0,
 	// 	timer: null
 	// }
-var state
+	var state
 	var questionOnScreen;
 	var answerOnScreen;
 	var timerId;
@@ -181,8 +181,8 @@ var state
   				check();
   				showWrong();
   				clicked = true;
-				newQuestion();
-				hideBtns();
+  				newQuestion();
+  				hideBtns();
   			}
 
   		}, 1000 );
@@ -193,27 +193,27 @@ var state
 		if ( asked >= 5 ) {
 			endGameScreen();
 		} else {
-		triviaArr.sort( randomOrder );
-		questionOnScreen = triviaArr[0].question;
-		$( '#question' ).append( '<div>' + questionOnScreen );
-		asked += 1;
+			triviaArr.sort( randomOrder );
+			questionOnScreen = triviaArr[0].question;
+			$( '#question' ).append( '<div>' + questionOnScreen );
+			asked += 1;
 		}
 	}
 
 
 	function renderButtons(){
-			console.log(triviaArr[0].asked)
-			$( '.answer' ).empty();
-			answerOnScreen = triviaArr[0].choices;
-			showBtns();
-			triviaArr[1].choices.sort( randomOrder );
-			
-			for ( i = 0; i < answerOnScreen.length; i++ ) {
-				var Btn = $( '<button>' + '<</br>' );
-				Btn.addClass( 'choice' );
-				Btn.attr( 'id', answerOnScreen[i] )
-				Btn.text( answerOnScreen[i] )
-				$( '.answer' ).append( Btn );
+		console.log(triviaArr[0].asked)
+		$( '.answer' ).empty();
+		answerOnScreen = triviaArr[0].choices;
+		showBtns();
+		triviaArr[1].choices.sort( randomOrder );
+
+		for ( i = 0; i < answerOnScreen.length; i++ ) {
+			var Btn = $( '<button>' + '</br>' );
+			Btn.addClass( 'choice' );
+			Btn.attr( 'id', answerOnScreen[i] )
+			Btn.text( answerOnScreen[i] )
+			$( '.answer' ).append( Btn );
 			if (triviaArr[0].asked === true) {	
 				$('#question').empty();
 				$('.answer').empty();
@@ -225,10 +225,10 @@ var state
 
 	// timer display function
 	function timerDisplay() {
-		var thirtySeconds = 60 / 2, 
+		var thirtySeconds = 60 / 4, 
 		display = $( '#timer' );
 		startTimer( thirtySeconds, display )
-		$( '#timer' ).text( ':30' );
+		$( '#timer' ).text( ':15' );
 	};
 
 	function check(){
@@ -289,29 +289,31 @@ var state
 
 	// render parts of the game
 	function renderGame(){
+
 	// questionOnScreen;
 	// answerOnScreen;
 	// timerId;
-	// rightAnswers = 0;
-	// wrongAnswers = 0;
-	// clicked = false;
-	// 	asked = 0;
-		randomOrder();
-		timerDisplay();
-		renderQuestion();
-		renderButtons();
-		clickAnswer();
-		newQuestion();
-	};
+	rightAnswers = 0;
+	wrongAnswers = 0;
+	clicked = false;
+		asked = 0;
+	$( '#display' ).hide();
+	randomOrder();
+	timerDisplay();
+	renderQuestion();
+	renderButtons();
+	clickAnswer();
+	newQuestion();
+};
 
-	function newQuestion(){
-		if ( clicked === true ) {
-			setTimeout( function(){ 
-				clicked = false;
-				$('#display').empty();
-				$('#question').empty();
-				$('#answer').empty();
-				$('#timer').empty();
+function newQuestion(){
+	if ( clicked === true ) {
+		setTimeout( function(){ 
+			clicked = false;
+			$('#display').empty();
+			$('#question').empty();
+			$('#answer').empty();
+			$('#timer').empty();
 				// asked += 1;
 				renderGame();
 					// trivia();
@@ -321,34 +323,38 @@ var state
 					// timerDisplay( randomOrder );
 					// clickAnswer();
 				}, 1000);	
-		};
 	};
-	
+};
+
 	// On the final screen, show the number of correct answers, incorrect answers, and an option to 
 	// restart the game (without reloading the page).
 	
 	function showRight() {
+		$( '#display' ).show();
 		$( '#display' ).html('<h2>' + 'Good job!' )
 	};
 
 	function showWrong(){
+		$( '#display' ).show();
 		$( '#display' ).html( 'wrong answer!' )
 		$( '#display' ).append( '</br>' + '<h2>' + 'It was ' + triviaArr[0].correctAns + '</h2>' )
 	};
 
 	function endGameScreen() {
 		// $( '#display' ).hide();
-	clearInterval( timerId );
+		clearInterval( timerId );
+		$('#timer').empty();
 		$( '#display' ).text( 'right answers: ' + rightAnswers + ' wrong answers: ' + wrongAnswers );
 		console.log("R: " + rightAnswers + " L: " + wrongAnswers);
 		restart();
 	};
 
 	function restart() {
-		$('#display2').append('<button>' + 'Restart?' + '</button>');
-		$('#display2').on('click', function(){
+		$( '#display' ).show();
+		// $('#display2').append('<button>' + 'Restart?' + '</button>');
+		// $('#display2').on('click', function(){
 			initiateGame();
-		});
+		// });
 	};
 
 // ---------------------
@@ -357,7 +363,13 @@ var state
 function initiateGame(){
 
 	$( document ).ready( function() {
-		renderGame();
+		
+		$( '#display' ).html('<button>' + 'start' + '</button>');
+		$( '#display' ).attr('start', 'start');
+		$( '#display' ).on( 'click', function() {
+			renderGame();
+		})
+		
 	});
 };
 
