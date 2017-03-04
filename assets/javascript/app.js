@@ -62,15 +62,15 @@
 	// 	wrongAnswers: 0,
 	// 	timer: null
 	// }
-
+var state
 	var questionOnScreen;
 	var answerOnScreen;
 	var timerId;
 	var rightAnswers = 0;
-	var	wrongAnswers;
+	var	wrongAnswers = 0;
 	var clicked = false;
 	var unanswered;
-	var asked = [];
+	var asked = 0;
 
 	var categories = [
 	'Too fast and so furious.', 'Get off my porch.', 'Pop goes the ... bubbles?', 'Just going to lose a few stones.', 'dollars.', 'You made this? I made this.', 'Blockbuster and chill.'
@@ -179,6 +179,7 @@
   				clearInterval( timerId );
   				display.text( "times up!" );
   				check();
+  				showWrong();
   				clicked = true;
 				newQuestion();
 				hideBtns();
@@ -189,10 +190,16 @@
 	};
 
 	function renderQuestion() {
+		if ( asked >= 5 ) {
+			endGameScreen();
+		} else {
 		triviaArr.sort( randomOrder );
 		questionOnScreen = triviaArr[0].question;
 		$( '#question' ).append( '<div>' + questionOnScreen );
+		asked += 1;
+		}
 	}
+
 
 	function renderButtons(){
 			console.log(triviaArr[0].asked)
@@ -209,7 +216,9 @@
 				$( '.answer' ).append( Btn );
 			if (triviaArr[0].asked === true) {	
 				$('#question').empty();
-				// renderGame();
+				$('.answer').empty();
+				renderQuestion();
+				// renderGame(); ---> does not work.
 			};
 		}
 	}
@@ -223,7 +232,7 @@
 	};
 
 	function check(){
-		if ( this.id  === triviaArr[0].correctAns ) {
+		if ( this.id  === triviaArr.correctAns ) {
 			showRight();
 			triviaArr[0].asked = true;
 			rightAnswers += 1;
@@ -280,6 +289,13 @@
 
 	// render parts of the game
 	function renderGame(){
+	// questionOnScreen;
+	// answerOnScreen;
+	// timerId;
+	// rightAnswers = 0;
+	// wrongAnswers = 0;
+	// clicked = false;
+	// 	asked = 0;
 		randomOrder();
 		timerDisplay();
 		renderQuestion();
@@ -296,6 +312,7 @@
 				$('#question').empty();
 				$('#answer').empty();
 				$('#timer').empty();
+				// asked += 1;
 				renderGame();
 					// trivia();
 					// randomOrder();
@@ -316,7 +333,22 @@
 
 	function showWrong(){
 		$( '#display' ).html( 'wrong answer!' )
-		$( '#display' ).html( '</br>' + '<h2>' + 'It was ' + triviaArr[0].correctAns + '</h2>' )
+		$( '#display' ).append( '</br>' + '<h2>' + 'It was ' + triviaArr[0].correctAns + '</h2>' )
+	};
+
+	function endGameScreen() {
+		// $( '#display' ).hide();
+	clearInterval( timerId );
+		$( '#display' ).text( 'right answers: ' + rightAnswers + ' wrong answers: ' + wrongAnswers );
+		console.log("R: " + rightAnswers + " L: " + wrongAnswers);
+		restart();
+	};
+
+	function restart() {
+		$('#display2').append('<button>' + 'Restart?' + '</button>');
+		$('#display2').on('click', function(){
+			initiateGame();
+		});
 	};
 
 // ---------------------
