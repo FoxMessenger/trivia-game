@@ -11,7 +11,6 @@ body {
 }
 
 .timer,
-.answer,
 .question {
 	text-align: center;
 	background-color: tomato;
@@ -19,12 +18,24 @@ body {
 	border-radius: 5px;
 }
 
+.answer {
+	text-align: center;
+	color: black;
+}	
+
+.choice {margin: 10px;}
+
+#display {
+	font-size: 20px;
+	color: black;
+	text-align: center;
+}
+
 #timer {
 	text-align: center;
 	background-color: tomato;
 	margin: 10px auto;
 }
-
 
 
 #test {

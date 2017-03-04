@@ -57,69 +57,86 @@
 	You'll create a trivia form with multiple choice or true/false options (your choice).
 	*/
 
-	var appState = {
-		rightAnswers: 0,
-		wrongAnswers: 0,
-		timer: null
-	}
+	// var appState = {
+	// 	rightAnswers: 0,
+	// 	wrongAnswers: 0,
+	// 	timer: null
+	// }
 
-
-
+	var questionOnScreen;
+	var answerOnScreen;
+	var timerId;
 	var rightAnswers = 0;
-	var	wrongAnswers = 0;
-	var unanswered = 0;
-	var usedQuestion = [];
+	var	wrongAnswers;
+	var clicked = false;
+	var unanswered;
+	var asked = [];
 
 	var categories = [
-			'movies', 'games', 'inventions', 'weight', 'dollars', 'history'
+	'Too fast and so furious.', 'Get off my porch.', 'Pop goes the ... bubbles?', 'Just going to lose a few stones.', 'dollars.', 'You made this? I made this.', 'Blockbuster and chill.'
 	];
-	
 
-	function triviaQuestion (question, choices, answer, asked) {
+
+	var trivia = function ( question, correctAns, choices, asked ) {
 		this.question = question;
+		// add a property of answers for the correct answer
+		this.correctAns = correctAns;
 		this.choices = choices;
-		this.answer = answer;
-		this.asked = asked ? asked : 0;
-	};
-	
-	var trivia = [
+		this.asked = asked;
 
-		new triviaQuestion (	
-			'Before television, this game was once played in many forms among families, friends, and even in tournaments everywhere.', 
-			['monopoly', 'cricket', 'knucklebones'],
-			'cards', 
-			0
+	};
+
+
+	var triviaArr = [
+	new trivia (
+		'Before television, this game was once played in many forms among families, friends, and even in tournaments everywhere. What game is it?', 
+		'Cards', 
+		['Cards', 'Monopoly', 'Cricket', 'Knucklebones'],
+		false
 		),
-		
-		new triviaQuestion 	(	
-			'What was bubble wraps original intention?', 
-			['as a stress relief for children', 'protection of fragile items', 'pressure gauge for NASA'],
-			'as 3D wallpaper',
-			0
+
+	new trivia (
+		'What was bubblewrap originally intended for?',
+		'As 3D wallpaper', 
+		['As a stress relief for children', 'Asylum padding alternative', 'As 3D wallpaper', 'Pressure gauge for NASA'],
+		false
+		),
+
+	new trivia (
+		'Who was the first Author to lose their billionaire status to charity?',	
+		'J.K. Rowling',
+		['Steven King', 'J.K. Rowling', 'William Shakespear', 'Earnest Hemingway'],
+		false
+		),
+	
+	new trivia (
+		'Who did Enzo Ferrari insult by saying they could drive a tractor, but never be able to handle a ferrari?',
+		'Ferruccio Lamborghini',
+		['Henry Ford', 'Elon Musk', 'Ferdinand Porsche','Ferruccio Lamborghini',],
+		false
+		),
+
+	new trivia (
+		'How old was the designer of the current US Flag?',
+		'That one 17 year old who got a B- for it', 
+		['That one 17 year old who got a B- for it', 'A class of 8 year old misfits', 'Charles and ray eames in their mid 30s', 'A 70 year old unknown patriot'], 
+		false
+		),
+
+	new trivia (
+		'We think we are fat, but did you know clouds are fatter? How fat do you think the average cloud is?',
+		'550 tons', 
+		['550 tons', 'As fat as your mum', '17 billion grams', '230lbs'],
+		false
+		),
+
+	new trivia (
+		'With a ton of late fees coming, or going, what is the last movie rented from Blockbuster?',
+		'This is the end', 
+		['End of days', 'Apollo 13', 'This is the end', 'Clerks 2'],
+		false
 		)
 	];
-	// 		'Who was the first Author to lose their billionaire status to charity?',
-	// 		'Who did Enzo Ferrari insult by saying they could drive a tractor, but never be able to handle a ferrari?',
-	// 		'How old was the designer of the current US Flag?',
-	// 		'We think we are fat, but did you know clouds are fatter? How fat do you think the average cloud is?'
-	// 		'With a ton of late fees coming, or going, what is the last movie rented from Blockbuster?'
-	// 		},
-		
-	// 	answers: {
-
-			
-	// 		// who wants to stop being a billionaire //rowling
-	// 		{ 'steven king', 'william shakespear',  'jk rowling', 'earnest hemingway' },
-	// 		// too fast, but too furious
-	// 		{ 'henry ford', 'elon musk', 'ferruccio lamborghini', 'ferdinand porsche' },
-	// 		// you made this? I made this //17
-	// 		{ 'a class of 8 year old misfits', 'charles and ray eames in their mid 30s', 'a 70 year old patriot', 'that one 17 year old who got a B- for it' },
-	// 		// clouds //1.1tons
-	// 		{ '550 tons', 'as much as your mum', '17 billion lbs', '230lbs' },
-	// 		// blockbuster //thisistheend
-	// 		{ 'apollo 13', 'end of days', 'this is the end', 'clerks 2' }
-	// 	}
-	// };
 
 
 
@@ -127,127 +144,189 @@
 //  Initialize App
 // ---------------------
 	//this should start the game OR reset it
-initiateGame();
 
 // ---------------------
 //  Event Management
 // ---------------------
-function initiateGame(){
-
-	$(document).ready(function() {
-	//grab user events and have it effect something
-	
-	/* 
-	You'll create a trivia game that shows only one question until the player answers it or their time runs out.
-	Don't let the player pick more than one answer per question.
-	*/
-		window.onload = function() {	
-			$( '.answer' ).on( 'click', function() {
-				console.log( 'this is clicked!' )
-			});
 
 
-				$('#timer').html(timer.start);
-		};
+	// You'll create a trivia game that shows only one question until the player answers it or their time runs out.
+	// Don't let the player pick more than one answer per question.
+
 // ---------------------
 //  Function and Logic
 // ---------------------
-	/* 
-	If the player selects the correct answer, show a screen congratulating them for choosing the 
-	right option. After a few seconds, display the next question -- do this without user input.
-	*/
-
-
-	
-	/*	
-	The scenario is similar for wrong answers and time-outs:
-	If the player runs out of time, tell the player that time's up and display the correct answer. 
-	Wait a few seconds, then show the next question.
-	
-	If the player chooses the wrong answer, tell the player they selected the wrong option and 
-		then display the correct answer. Wait a few seconds, then show the next question.
-	*/
-
-	// --- TIMER --- //
-		var timerId;
-	  	function startTimer(duration, display) {
-	  		var timer = duration, seconds;
-	  		timerId = setInterval(function() {
-
-  				seconds = parseInt(timer % 60, 10);
-
-  				seconds = seconds < 10 ? "0" + seconds : seconds;
-
-  				display.text(":" + seconds)
-
-  				// this is increment then test against zero, it's very similar to time++, except when the ++ or -- after after, it does the variable (time) against 0, and then the in cremented variable (which would be +1 or -1)
-  				if (--timer < 0) {
-  					timer = duration;
-  					clearInterval(timerId);
-					display.text("times up!")  	
-					
-					// setTimeout(function(){
-  			// 			startTimer(duration,display);	
-					// }, 1000 * 2); 			
-  				}
-  			}, 1000);
-  		};
-
-
-
-	// question, choices, answer, asked
-	var answers = $('#question').each(function(){
-		for (var i = 0; i < trivia.length; i++)	{			// the forLoop is to get all the characters in the object array on the screen.
-			var information = $('<div>');					// this variable is equal to a button that will soon be ported to the HTML page
-			information.addClass('question');					// creating what the character buttons looks like
-			information.attr('question', 'question');		// adding the data for names
-			// information.attr('choices', trivia[i].choices);	// adding the data for hp 
-			// information.attr('answer', trivia[i].answer);	// adding the data answer (position 0 — probably won't work) 
-
-			//$('#question').append(trivia[i].question);
-			if (trivia[i].question) {
-				//appendQuestionToDom(trivia[i].question);
-				appendQuestionToDom(information);
-			}
-					// porting the image to the html
-
-		}; // --END for Loops
-	}); // - END answers
-
-	function appendQuestionToDom(domElement) {
-		$('#question').html(domElement)
-	}
 
 	// function to grab a random question
-	// function to grab corresponding answers
-	// function to grab a random category
-	// add a property of answeres for the correct answer
-	// for (i=0; i < trivia.answer.length; i++) {
-	// 	console.log(trivia.answers[i])
-	// }
+	
+	function randomOrder(){
+		return ( Math.round( Math.random()) -0.5 ); 	
+	}
+	
+	// --- TIMER --- //
+	function startTimer( duration, display ) {
+		var timer = duration, seconds;
+		timerId = setInterval( function() {
+			seconds = parseInt( timer % 60, 10 );
+			seconds = seconds < 10 ? "0" + seconds : seconds;
+			display.html( ":" + seconds );
+  			// this is increment then test against zero, it's very similar to time++, except when the ++ or -- after after, it does the variable (time) against 0, and then the in cremented variable (which would be +1 or -1)
+  			if ( clicked === true ) {
+  				clearInterval( timerId );
+  			}
+  			if ( --timer < 0 ) {
+  				timer = duration;
+  				clearInterval( timerId );
+  				display.text( "times up!" );
+  				check();
+  				clicked = true;
+				newQuestion();
+				hideBtns();
+  			}
+
+  		}, 1000 );
+
+	};
+
+	function renderQuestion() {
+		triviaArr.sort( randomOrder );
+		questionOnScreen = triviaArr[0].question;
+		$( '#question' ).append( '<div>' + questionOnScreen );
+	}
+
+	function renderButtons(){
+			console.log(triviaArr[0].asked)
+			$( '.answer' ).empty();
+			answerOnScreen = triviaArr[0].choices;
+			showBtns();
+			triviaArr[1].choices.sort( randomOrder );
+			
+			for ( i = 0; i < answerOnScreen.length; i++ ) {
+				var Btn = $( '<button>' + '<</br>' );
+				Btn.addClass( 'choice' );
+				Btn.attr( 'id', answerOnScreen[i] )
+				Btn.text( answerOnScreen[i] )
+				$( '.answer' ).append( Btn );
+			if (triviaArr[0].asked === true) {	
+				$('#question').empty();
+				// renderGame();
+			};
+		}
+	}
+
+	// timer display function
+	function timerDisplay() {
+		var thirtySeconds = 60 / 2, 
+		display = $( '#timer' );
+		startTimer( thirtySeconds, display )
+		$( '#timer' ).text( ':30' );
+	};
+
+	function check(){
+		if ( this.id  === triviaArr[0].correctAns ) {
+			showRight();
+			triviaArr[0].asked = true;
+			rightAnswers += 1;
+		}
+		else {
+			showWrong();
+			triviaArr[0].asked = true;
+			wrongAnswers += 1;	
+		}
+	}
+
+	// answer click event function
+	function clickAnswer(){
+		$( '.choice' ).on( 'click', function() {
+			check()
+			clicked = true;
+			newQuestion();
+			hideBtns();
+		});
+	};
+
+	
+	// If the player selects the correct answer, show a screen congratulating them for choosing the 
+	// right option. After a few seconds, display the next question -- do this without user input.
+	
+
+	
+	// The scenario is similar for wrong answers and time-outs:
+	// If the player runs out of time, tell the player that time's up and display the correct answer. 
+	// Wait a few seconds, then show the next question.
+	
+	// If the player chooses the wrong answer, tell the player they selected the wrong option and 
+	// then display the correct answer. Wait a few seconds, then show the next question.
+
 // ---------------------
 //  Display Management / User Interface
 // ---------------------
-		
-		$('#timer').text(":10");
 
+	// hide button
+	function hideBtns(){
+		$( '.answer' ).hide();
+		$( '#timer' ).hide();
+	};
 
-		function timerDisplay() {
-			var thirtySeconds = 60 / 6, 
-				display = $('#timer');	
-		startTimer(thirtySeconds, display)
-		}
+	function showBtns(){
+		$( '.answer' ).show();
+		$( '#timer' ).show();
+	};
 
+	// render answer buttons
+	
+
+	// function renderDisplay();
+
+	// render parts of the game
+	function renderGame(){
+		randomOrder();
 		timerDisplay();
-	/*
-	On the final screen, show the number of correct answers, incorrect answers, and an option to 
-	restart the game (without reloading the page).
-	*/
+		renderQuestion();
+		renderButtons();
+		clickAnswer();
+		newQuestion();
+	};
 
+	function newQuestion(){
+		if ( clicked === true ) {
+			setTimeout( function(){ 
+				clicked = false;
+				$('#display').empty();
+				$('#question').empty();
+				$('#answer').empty();
+				$('#timer').empty();
+				renderGame();
+					// trivia();
+					// randomOrder();
+					// startTimer();
+					// // renderButtons();
+					// timerDisplay( randomOrder );
+					// clickAnswer();
+				}, 1000);	
+		};
+	};
+	
+	// On the final screen, show the number of correct answers, incorrect answers, and an option to 
+	// restart the game (without reloading the page).
+	
+	function showRight() {
+		$( '#display' ).html('<h2>' + 'Good job!' )
+	};
+
+	function showWrong(){
+		$( '#display' ).html( 'wrong answer!' )
+		$( '#display' ).html( '</br>' + '<h2>' + 'It was ' + triviaArr[0].correctAns + '</h2>' )
+	};
 
 // ---------------------
 //  Data Layer / Persistence Layer
 // ---------------------
+function initiateGame(){
 
+	$( document ).ready( function() {
+		renderGame();
 	});
 };
+
+initiateGame();
